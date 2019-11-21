@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "luckalp",
   "license": "ISC",
   "dependencies": {
     "rcon": "^1.0.3",
@@ -15,5 +15,20 @@
     "nodes": {
       "rcon": "rcon.js"
     }
-  }
+  },
+  "main": "rcon.js",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/luckalp/node-red-contrib-rcon.git"
+  },
+  "keywords": [
+    "node-red",
+    "rcon",
+    "steam"
+  ],
+  "bugs": {
+    "url": "https://github.com/luckalp/node-red-contrib-rcon/issues"
+  },
+  "homepage": "https://github.com/luckalp/node-red-contrib-rcon#readme"
 }
