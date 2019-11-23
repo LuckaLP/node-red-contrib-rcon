@@ -24,7 +24,7 @@ module.exports = function (RED) {
 
       // input from another node
       this.on("input", function (msg) {
-        if (node.command) msg.payload = { payload: node.command };
+        if (node.command) msg.payload = node.command;
         node.lastCommand = msg.payload;
         node._sendMsg(msg)
       });

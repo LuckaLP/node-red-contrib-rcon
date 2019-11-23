@@ -69,22 +69,30 @@ module.exports = function (RED) {
       }
     }
 
-    this.keepAliveTimer = setInterval(function () {
-      let ts = Math.floor(Date.now() / 1000)
-      if (node.connected && (ts - node.keepalive) > node.lastHeartbeat) {
-        node.reconnect();
-        node.log("heartbeat lost")
-      }
-    }, (this.keepalive || 30) * 1000)
-    this.heartBeat = function () {
-      node.lastHeartbeat = Math.floor(Date.now() / 1000);
+    this.startMonitors = function () {
+      node.stopMonitors();
+      node.keepAliveTimer = setInterval(function () {
+        let ts = Math.floor(Date.now() / 1000)
+        if (node.connected && (ts - node.keepalive) > node.lastHeartbeat) {
+          node.reconnect();
+          node.log("heartbeat lost")
+        }
+      }, (node.keepalive || 30) * 1000)
+      node.pingTimer = setInterval(function () {
+        if (node.connected) {
+          node.sendMsg("echo ping");
+        }
+      }, (node.keepalive || 30) / 2 * 1000)
+    }
+    this.stopMonitors = function () {
+      if (node.pingTimer) clearInterval(node.pingTimer)
+      if (node.keepAliveTimer) clearInterval(node.keepAliveTimer)
     }
 
-    this.pingTimer = setInterval(function () {
-      if (node.connected) {
-        node.sendMsg("echo ping");
-      }
-    }, (this.keepalive || 30) / 2 * 1000)
+    this.heartBeat = function () {
+      // node.log('heartBeat');
+      node.lastHeartbeat = Math.floor(Date.now() / 1000);
+    }
 
     this.connect = function () {
       if (!node.connected && !node.connecting) {
@@ -95,12 +103,13 @@ module.exports = function (RED) {
           node.client = new WebSocket('ws://' + node.host + ':' + node.port + '/' + node.password);
 
           node.client.on('open', function () {
-            node.heartBeat();
             node.connecting = false;
             node.connected = true;
             node.log("connected to " + (node.clientid ? node.clientid + "@" : "") + node.host + ":" + node.port);
             node.sendUsersStatus({ fill: "green", shape: "dot", text: "connected" });
             node.sendUsersConnState('connected');
+            node.heartBeat();
+            node.startMonitors();
           });
 
           node.client.on('message', function (data, flags) {
@@ -152,7 +161,7 @@ module.exports = function (RED) {
           })
 
           node.client.on('error', function (e) {
-            node.log("error:", e);
+            node.log("error:" + e);
             node.sendUsersStatus({ fill: "red", shape: "ring", text: "error:" + e });
             node.connected = false;
             node.connecting = false;
@@ -169,6 +178,7 @@ module.exports = function (RED) {
     };
 
     this.reconnect = function () {
+      node.stopMonitors();
       node.log("reconnecting")
       setTimeout(function () {
         node.client.terminate();
@@ -189,7 +199,6 @@ module.exports = function (RED) {
           Message: payload,
           Name: node.clientid
         })
-
         node.client.send(packet);
       }
     };
@@ -200,9 +209,8 @@ module.exports = function (RED) {
     }
 
     this.on('close', function (done) {
-      this.closing = true;
-      if (this.pingTimer) clearInterval(this.pingTimer)
-      if (this.keepAliveTimer) clearInterval(this.keepAliveTimer)
+      node.closing = true;
+      node.stopMonitors();
       if (node.connected || node.connecting) {
         node.client.close(1000)
         node.connected = false
