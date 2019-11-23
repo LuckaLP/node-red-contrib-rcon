@@ -1,0 +1,36 @@
+<script type="text/x-red" data-template-name="rcon listen">
+  <div class="form-row">
+      <label for="node-input-name"><i class="fa fa-tag"></i> <span>Name</span></label>
+      <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+  <div class="form-row">
+      <label for="node-input-connection"><i class="fa fa-globe"></i> <span>Connection</span></label>
+      <input type="text" id="node-input-connection">
+  </div>
+  <div class="form-row">
+      <label for="node-input-listenType"><i class="fa fa-globe"></i> <span>Message Type</span></label>
+      <input id="node-input-listenType" type="text" placeholder="Generic">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="rcon listen">
+  <p>todo help listen.</p>
+</script>
+
+<script type="text/javascript">
+  RED.nodes.registerType('rcon listen', {
+    category: 'Games',
+    color: "rgb(231, 231, 174)",
+    defaults: {
+      name: { value: '' },
+      connection: { type: "rcon-ws-server", required: true },
+      listenType: { value: "Generic" },
+    },
+    inputs: 0,
+    outputs: 1,
+    icon: "white-globe.png",
+    label: function () {
+      return this.name || "RCON listen";
+    }
+  });
+</script>

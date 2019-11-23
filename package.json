@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-rcon",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "node-red rcon client for steam servers",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -8,12 +8,14 @@
   "author": "luckalp",
   "license": "MIT",
   "dependencies": {
-    "rcon": "^1.0.3",
     "ws": "^7.2.0"
   },
   "node-red": {
     "nodes": {
-      "rcon": "rcon.js"
+      "rcon-ws-server": "nodes/rcon-ws-server.js",
+      "rcon-query": "nodes/rcon-query.js",
+      "rcon-send": "nodes/rcon-send.js",
+      "rcon-listen": "nodes/rcon-listen.js"
     }
   },
   "main": "rcon.js",
