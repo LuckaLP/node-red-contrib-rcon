@@ -41,15 +41,17 @@ module.exports = function (RED) {
     this.deregister = function (cmdNode, done) {
       delete node.users[cmdNode.id];
       if (node.closing) {
-        return done();
+        done();
       }
       if (Object.keys(node.users).length === 0) {
         if (node.client && node.connected) {
           node.client.close(1000);
           done();
         } else {
-          return done();
+          done();
         }
+      } else {
+        done();
       }
     };
 
